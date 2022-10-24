@@ -247,7 +247,7 @@ def build(target_dir, platform, debug):
 
     # Cleanup build dir
     rmr(build_dir)
-    mkdirp(build_dir)
+    # mkdirp(build_dir)
 
     # Copy build artifacts to build directory
     if platform == 'ios':
