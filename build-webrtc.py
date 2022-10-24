@@ -126,7 +126,7 @@ def setup(target_dir, platform):
     sh('gclient sync', env)
 
     # Install dependencies
-    if platform == 'android':
+    if platform == 'android' or platform == 'windows':
         webrtc_dir = os.path.join(target_dir, 'webrtc', platform, 'src')
         os.chdir(webrtc_dir)
         sh('./build/install-build-deps.sh')
