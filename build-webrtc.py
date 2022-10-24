@@ -218,9 +218,9 @@ def build(target_dir, platform, debug):
     elif platform == 'windows':
         gn_out_dir = 'out/%s' % build_type
         if(build_type == 'Debug'):
-            gn_cmd = 'gn gen %s' % (gn_out_dir)
+            gn_cmd = 'gn gen %s' % (build_dir)
         else:
-            gn_cmd = "gn gen %s --args='is_debug=false'" % (gn_out_dir)
+            gn_cmd = "gn gen %s --args='is_debug=false'" % (build_dir)
         sh(gn_cmd, env)
             
 
