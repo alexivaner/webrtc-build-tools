@@ -204,12 +204,21 @@ def build(target_dir, platform, debug):
             gn_args = GN_MACOS_ARGS % (str(debug).lower(), arch)
             gn_cmd = 'gn gen %s %s' % (gn_out_dir, gn_args)
             sh(gn_cmd, env)
-    else:
+    elif platform == 'android':
         for cpu in ANDROID_BUILD_CPUS:
             gn_out_dir = 'out/%s-%s' % (build_type, cpu)
             gn_args = GN_ANDROID_ARGS % (str(debug).lower(), cpu)
             gn_cmd = 'gn gen %s %s' % (gn_out_dir, gn_args)
             sh(gn_cmd, env)
+
+    elif platform == 'windows':
+        gn_out_dir = 'out/%s' % build_type
+        if(build_type == 'Debug'):
+            gn_cmd = 'gn gen %s' % (gn_out_dir)
+        else:
+            gn_cmd = "gn gen %s --args='is_debug=false'" % (gn_out_dir)
+        sh(gn_cmd, env)
+            
 
     # Build with Ninja
     if platform == 'ios':
@@ -222,11 +231,15 @@ def build(target_dir, platform, debug):
             gn_out_dir = 'out/%s-macos-%s' % (build_type, arch)
             ninja_cmd = 'ninja -C %s mac_framework_objc' % gn_out_dir
             sh(ninja_cmd, env)
-    else:
+    elif platform == 'android':
         for cpu in ANDROID_BUILD_CPUS:
             gn_out_dir = 'out/%s-%s' % (build_type, cpu)
             ninja_cmd = 'ninja -C %s libwebrtc libjingle_peerconnection_so' % gn_out_dir
             sh(ninja_cmd, env)
+
+    elif platform == 'windows':
+        ninja_cmd = 'ninja -C %s' % gn_out_dir
+        sh(ninja_cmd, env)
 
     # Cleanup build dir
     rmr(build_dir)
