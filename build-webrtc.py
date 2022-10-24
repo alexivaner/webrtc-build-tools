@@ -316,7 +316,7 @@ def build(target_dir, platform, debug):
         rmr(os.path.join(build_dir, 'lib'))
         sh('tar zcf android-webrtc.tgz *.jar', cwd=build_dir)
     elif platform == "windows" :
-        gn_out_dir = 'out/%s-%s' % (build_type, WINDOWS_BUILD_ARGS[0])
+        gn_out_dir = 'out/Release'
         shutil.copytree(gn_out_dir, build_dir)
 
 if __name__ == "__main__":
