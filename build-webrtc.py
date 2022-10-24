@@ -218,9 +218,9 @@ def build(target_dir, platform, debug):
     elif platform == 'windows':
         gn_out_dir = 'out/%s' % build_type
         if(build_type == 'Debug'):
-            gn_cmd = 'gn gen %s' % (build_dir)
+            gn_cmd = 'gn gen %s' % (gn_out_dir)
         else:
-            gn_cmd = "gn gen %s --args='is_debug=false'" % (build_dir)
+            gn_cmd = "gn gen %s --args='is_debug=false'" % (gn_out_dir)
         sh(gn_cmd, env)
             
 
@@ -242,10 +242,7 @@ def build(target_dir, platform, debug):
             sh(ninja_cmd, env)
 
     elif platform == 'windows':
-        # //build for windows
-        rmr(build_dir)
-        mkdirp(build_dir)
-        ninja_cmd = 'ninja -C %s' % build_dir
+        ninja_cmd = 'ninja -C %s' % gn_out_dir
         sh(ninja_cmd, env)
 
     # Cleanup build dir
@@ -318,13 +315,10 @@ def build(target_dir, platform, debug):
         sh('jar cvfM libjingle_peerconnection.so.jar lib', cwd=build_dir)
         rmr(os.path.join(build_dir, 'lib'))
         sh('tar zcf android-webrtc.tgz *.jar', cwd=build_dir)
-    # elif platform == "windows" :
-    #     gn_out_dir = 'out/%s-%s' % (build_type, WINDOWS_BUILD_ARGS[0])
-    #     shutil.copy(os.path.join(gn_out_dir, 'webrtc.lib'), build_dir)
-    #     shutil.copy(os.path.join(gn_out_dir, 'jingle_peerconnection_so.lib'), build_dir)
-    #     shutil.copy(os.path.join(gn_out_dir, 'jingle_peerconnection_so.dll'), build_dir)
-    #     sh('tar zcf windows-webrtc.tgz *.lib *.dll', cwd=build_dir)
-
+    elif platform == "windows" :
+        gn_out_dir = 'out/%s-%s' % (build_type, WINDOWS_BUILD_ARGS[0])
+        shutil.copytree(os.path.join(gn_out_dir, 'webrtc.lib'), build_dir)
+        sh('tar zcf webrtc.lib.tgz webrtc.lib', cwd=build_dir)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
