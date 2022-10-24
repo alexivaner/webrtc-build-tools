@@ -119,7 +119,7 @@ def setup(target_dir, platform):
         print('Fetching WebRTC for %s...' % platform)
         if platform == 'android' or platform == 'ios':
             sh('fetch --nohooks webrtc_%s' % platform, env)
-        elif platform == 'macos':
+        elif platform == 'windows' or platform == 'macos':
             sh('fetch --nohooks webrtc', env)
 
     # Run gclient
