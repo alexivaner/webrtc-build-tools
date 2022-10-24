@@ -117,7 +117,10 @@ def setup(target_dir, platform):
         mkdirp(webrtc_dir)
         os.chdir(webrtc_dir)
         print('Fetching WebRTC for %s...' % platform)
-        sh('fetch --nohooks webrtc_%s' % platform, env)
+        if platform == 'android' or platform == 'ios':
+            sh('fetch --nohooks webrtc_%s' % platform, env)
+        elif platform == 'macos':
+            sh('fetch --nohooks webrtc', env)
 
     # Run gclient
     sh('gclient sync', env)
@@ -127,6 +130,14 @@ def setup(target_dir, platform):
         webrtc_dir = os.path.join(target_dir, 'webrtc', platform, 'src')
         os.chdir(webrtc_dir)
         sh('./build/install-build-deps.sh')
+    # elif platform == 'ios':
+    #     webrtc_dir = os.path.join(target_dir, 'webrtc', platform, 'src')
+    #     os.chdir(webrtc_dir)
+    #     sh('./build/install-build-deps.sh --ios')
+    # elif platform == 'macos':
+    #     webrtc_dir = os.path.join(target_dir, 'webrtc', platform, 'src')
+    #     os.chdir(webrtc_dir)
+    #     sh('./build/install-build-deps.sh --mac')
 
 
 def sync(target_dir, platform):
@@ -297,6 +308,8 @@ if __name__ == "__main__":
     parser.add_argument('--sync', help='Runs gclient sync on the WebRTC directory', action='store_true')
     parser.add_argument('--ios', help='Use iOS as the target platform', action='store_true')
     parser.add_argument('--android', help='Use Android as the target platform', action='store_true')
+    parser.add_argument('--macos', help='Use macOS as the target platform', action='store_true')
+    parser.add_argument('--windows', help='Use windows simulator as the target platform', action='store_true')
     parser.add_argument('--debug', help='Make a Debug build (defaults to false)', action='store_true')
 
     args = parser.parse_args()
@@ -309,7 +322,7 @@ if __name__ == "__main__":
         print('--setup and --build cannot be specified at the same time!')
         sys.exit(1)
 
-    if not (args.ios or args.android):
+    if not (args.ios or args.android or args.windows or args.macos):
         print('--ios or --android must be specified!')
         sys.exit(1)
 
@@ -322,7 +335,20 @@ if __name__ == "__main__":
         sys.exit(1)
 
     target_dir = os.path.abspath(os.path.join(args.dir, 'build_webrtc'))
-    platform = 'ios' if args.ios else 'android'
+
+    if args.ios:
+        platform = 'ios'
+
+    if args.android:
+        platform = 'android'
+
+    if args.macos:
+        platform = 'macos'
+
+    if args.windows:
+        platform = 'windows'
+
+    # platform = 'ios' if args.ios else 'android'
 
     if args.setup:
         setup(target_dir, platform)
