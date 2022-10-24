@@ -31,6 +31,10 @@ MACOS_BUILD_ARCHS = [
     'x64'
 ]
 
+WINDOWS_BUILD_ARGS = [
+    'x64'
+]
+
 def build_gn_args(platform_args):
     return "--args='" + ' '.join(GN_COMMON_ARGS + platform_args) + "'"
 
@@ -238,7 +242,10 @@ def build(target_dir, platform, debug):
             sh(ninja_cmd, env)
 
     elif platform == 'windows':
-        ninja_cmd = 'ninja -C %s' % gn_out_dir
+        # //build for windows
+        rmr(build_dir)
+        mkdirp(build_dir)
+        ninja_cmd = 'ninja -C %s' % build_dir
         sh(ninja_cmd, env)
 
     # Cleanup build dir
@@ -298,7 +305,7 @@ def build(target_dir, platform, debug):
         sh(xcodebuild_cmd)
         sh('tar zcf WebRTC.xcframework.tgz WebRTC.xcframework', cwd=build_dir)
         rmr(xcframework_path)
-    else:
+    elif platform == 'android':
         gn_out_dir = 'out/%s-%s' % (build_type, ANDROID_BUILD_CPUS[0])
         shutil.copy(os.path.join(gn_out_dir, 'lib.java/sdk/android/libwebrtc.jar'), build_dir)
 
@@ -311,6 +318,12 @@ def build(target_dir, platform, debug):
         sh('jar cvfM libjingle_peerconnection.so.jar lib', cwd=build_dir)
         rmr(os.path.join(build_dir, 'lib'))
         sh('tar zcf android-webrtc.tgz *.jar', cwd=build_dir)
+    # elif platform == "windows" :
+    #     gn_out_dir = 'out/%s-%s' % (build_type, WINDOWS_BUILD_ARGS[0])
+    #     shutil.copy(os.path.join(gn_out_dir, 'webrtc.lib'), build_dir)
+    #     shutil.copy(os.path.join(gn_out_dir, 'jingle_peerconnection_so.lib'), build_dir)
+    #     shutil.copy(os.path.join(gn_out_dir, 'jingle_peerconnection_so.dll'), build_dir)
+    #     sh('tar zcf windows-webrtc.tgz *.lib *.dll', cwd=build_dir)
 
 
 if __name__ == "__main__":
