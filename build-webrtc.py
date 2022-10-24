@@ -317,8 +317,7 @@ def build(target_dir, platform, debug):
         sh('tar zcf android-webrtc.tgz *.jar', cwd=build_dir)
     elif platform == "windows" :
         gn_out_dir = 'out/%s-%s' % (build_type, WINDOWS_BUILD_ARGS[0])
-        shutil.copytree(os.path.join(gn_out_dir, 'webrtc.lib'), build_dir)
-        sh('tar zcf webrtc.lib.tgz webrtc.lib', cwd=build_dir)
+        shutil.copytree(gn_out_dir, build_dir)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
